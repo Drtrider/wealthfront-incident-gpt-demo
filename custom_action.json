@@ -1,0 +1,440 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "Notion API - Create Page",
+      "version": "1.0.0",
+      "description": "Create a Notion page and optionally add heading_1 and paragraph blocks as initial content. Uses Notion's POST /v1/pages endpoint."
+    },
+    "externalDocs": {
+      "description": "Notion API reference: Create a page",
+      "url": "https://developers.notion.com/reference/post-page"
+    },
+    "servers": [
+      {
+        "url": "https://api.notion.com",
+        "description": "Notion public API"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "Notion Integration Secret"
+        }
+      },
+      "schemas": {
+        "CreatePageRequest": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "parent": {
+              "$ref": "#/components/schemas/Parent"
+            },
+            "properties": {
+              "description": "When creating in a database (parent.database_id), you must supply the database's required properties, including its title property (often named 'Name').",
+              "$ref": "#/components/schemas/Properties"
+            },
+            "children": {
+              "type": "array",
+              "description": "Optional list of blocks to append on creation. Supports heading_1 and paragraph here.",
+              "items": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/Heading1BlockInput" },
+                  { "$ref": "#/components/schemas/ParagraphBlockInput" }
+                ]
+              }
+            },
+            "icon": {
+              "description": "Optional page icon.",
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": { "const": "emoji" },
+                    "emoji": { "type": "string" }
+                  },
+                  "required": ["type", "emoji"],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": { "const": "external" },
+                    "external": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string", "format": "uri" }
+                      },
+                      "required": ["url"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["type", "external"],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "cover": {
+              "description": "Optional page cover image.",
+              "type": "object",
+              "properties": {
+                "type": { "const": "external" },
+                "external": {
+                  "type": "object",
+                  "properties": {
+                    "url": { "type": "string", "format": "uri" }
+                  },
+                  "required": ["url"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["type", "external"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["parent"]
+        },
+        "Parent": {
+          "type": "object",
+          "description": "Either database_id (to create a row in a database) or page_id (to create a sub-page).",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "const": "database_id" },
+                "database_id": { "type": "string" }
+              },
+              "required": ["database_id"],
+              "additionalProperties": true
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "const": "page_id" },
+                "page_id": { "type": "string" }
+              },
+              "required": ["page_id"],
+              "additionalProperties": true
+            }
+          ]
+        },
+        "Properties": {
+          "type": "object",
+          "description": "Database properties. Use the exact property names from your database (e.g., 'Name' for the title).",
+          "additionalProperties": true,
+          "examples": [
+            {
+              "Name": {
+                "title": [
+                  {
+                    "type": "text",
+                    "text": { "content": "My new page" }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "RichTextInput": {
+          "type": "object",
+          "description": "Minimal rich_text item for input. Notion will populate calculated fields (plain_text, href, etc.).",
+          "properties": {
+            "type": { "const": "text" },
+            "text": {
+              "type": "object",
+              "properties": {
+                "content": { "type": "string" },
+                "link": {
+                  "oneOf": [
+                    { "type": "null" },
+                    {
+                      "type": "object",
+                      "properties": { "url": { "type": "string", "format": "uri" } },
+                      "required": ["url"],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              },
+              "required": ["content"],
+              "additionalProperties": false
+            },
+            "annotations": {
+              "type": "object",
+              "properties": {
+                "bold": { "type": "boolean" },
+                "italic": { "type": "boolean" },
+                "strikethrough": { "type": "boolean" },
+                "underline": { "type": "boolean" },
+                "code": { "type": "boolean" },
+                "color": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "gray",
+                    "brown",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "red",
+                    "gray_background",
+                    "brown_background",
+                    "orange_background",
+                    "yellow_background",
+                    "green_background",
+                    "blue_background",
+                    "purple_background",
+                    "pink_background",
+                    "red_background"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["type", "text"],
+          "additionalProperties": false,
+          "examples": [
+            { "type": "text", "text": { "content": "Hello world" } }
+          ]
+        },
+        "Heading1BlockInput": {
+          "type": "object",
+          "description": "heading_1 block for creation.",
+          "properties": {
+            "object": { "const": "block" },
+            "heading_1": {
+              "type": "object",
+              "properties": {
+                "rich_text": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RichTextInput" },
+                  "minItems": 1
+                },
+                "is_toggleable": { "type": "boolean" },
+                "color": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "gray",
+                    "brown",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "red"
+                  ]
+                }
+              },
+              "required": ["rich_text"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["object", "heading_1"],
+          "additionalProperties": false,
+          "examples": [
+            {
+              "object": "block",
+              "heading_1": {
+                "rich_text": [
+                  { "type": "text", "text": { "content": "Welcome!" } }
+                ]
+              }
+            }
+          ]
+        },
+        "ParagraphBlockInput": {
+          "type": "object",
+          "description": "paragraph block for creation.",
+          "properties": {
+            "object": { "const": "block" },
+            "paragraph": {
+              "type": "object",
+              "properties": {
+                "rich_text": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RichTextInput" },
+                  "minItems": 0
+                },
+                "color": {
+                  "type": "string",
+                  "enum": [
+                    "default",
+                    "gray",
+                    "brown",
+                    "orange",
+                    "yellow",
+                    "green",
+                    "blue",
+                    "purple",
+                    "pink",
+                    "red"
+                  ]
+                }
+              },
+              "required": ["rich_text"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["object", "paragraph"],
+          "additionalProperties": false,
+          "examples": [
+            {
+              "object": "block",
+              "paragraph": {
+                "rich_text": [
+                  { "type": "text", "text": { "content": "This is the first paragraph on the page." } }
+                ]
+              }
+            }
+          ]
+        },
+        "CreatePageResponse": {
+          "type": "object",
+          "description": "The created Notion page object.",
+          "additionalProperties": true
+        },
+        "ErrorResponse": {
+          "type": "object",
+          "properties": {
+            "object": { "type": "string", "const": "error" },
+            "status": { "type": "integer" },
+            "code": { "type": "string" },
+            "message": { "type": "string" }
+          },
+          "required": ["object", "status", "code", "message"],
+          "additionalProperties": true
+        }
+      }
+    },
+    "paths": {
+      "/v1/pages": {
+        "post": {
+          "operationId": "createPage",
+          "summary": "Create a Notion page",
+          "description": "Creates a page in a database (requires properties, including the title property) or as a sub-page under a page (properties optional). You can include heading_1 and paragraph blocks in `children`.",
+          "security": [
+            { "bearerAuth": [] }
+          ],
+          "parameters": [
+            {
+              "in": "header",
+              "name": "Notion-Version",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "example": "2022-06-28"
+              },
+              "description": "API version header required by Notion."
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreatePageRequest" },
+                "examples": {
+                  "createInDatabaseWithBlocks": {
+                    "summary": "Create in a database with title and two blocks",
+                    "value": {
+                      "parent": { "database_id": "YOUR_DATABASE_ID" },
+                      "properties": {
+                        "Name": {
+                          "title": [
+                            { "type": "text", "text": { "content": "My new page" } }
+                          ]
+                        }
+                      },
+                      "children": [
+                        {
+                          "object": "block",
+                          "heading_1": {
+                            "rich_text": [
+                              { "type": "text", "text": { "content": "Hello Notion" } }
+                            ]
+                          }
+                        },
+                        {
+                          "object": "block",
+                          "paragraph": {
+                            "rich_text": [
+                              { "type": "text", "text": { "content": "This page was created via the API." } }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "createUnderPageWithBlocks": {
+                    "summary": "Create as a sub-page with blocks (no properties required)",
+                    "value": {
+                      "parent": { "page_id": "PARENT_PAGE_ID" },
+                      "children": [
+                        {
+                          "object": "block",
+                          "heading_1": {
+                            "rich_text": [
+                              { "type": "text", "text": { "content": "Subpage heading" } }
+                            ]
+                          }
+                        },
+                        {
+                          "object": "block",
+                          "paragraph": {
+                            "rich_text": [
+                              { "type": "text", "text": { "content": "Some paragraph text." } }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Created page",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/CreatePageResponse" }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request (validation error, missing properties, etc.)",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized (invalid or missing bearer token)",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden (integration lacks access to the parent page/database)",
+              "content": {
+                "application/json": {
+                  "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
