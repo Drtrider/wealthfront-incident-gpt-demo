@@ -335,11 +335,11 @@
                   "createInDatabaseWithBlocks": {
                     "summary": "Create in a database with title and two blocks",
                     "value": {
-                      "parent": { "database_id": "YOUR_DATABASE_ID" },
+                      "parent": { "database_id": "28d86896-5b38-80de-8988-000b8b682e14" },
                       "properties": {
-                        "Name": {
+                        "Post-Mortem Summary": {
                           "title": [
-                            { "type": "text", "text": { "content": "My new page" } }
+                            { "type": "text", "text": { "content": "Outage of payment system" } }
                           ]
                         }
                       },
