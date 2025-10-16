@@ -1,0 +1,348 @@
+openapi: 3.1.0
+info:
+  title: Notion Create Page API
+  description: Create pages in Notion with dynamic content including headings and paragraphs
+  version: 1.0.0
+servers:
+  - url: https://api.notion.com/v1
+    description: Notion API Server
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Notion Integration Token
+  
+  schemas:
+    RichTextContent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [text]
+          default: text
+        text:
+          type: object
+          properties:
+            content:
+              type: string
+              description: The text content
+            link:
+              type: object
+              nullable: true
+              properties:
+                url:
+                  type: string
+          required:
+            - content
+      required:
+        - type
+        - text
+    
+    Heading1Block:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [block]
+          default: block
+        type:
+          type: string
+          enum: [heading_1]
+          default: heading_1
+        heading_1:
+          type: object
+          properties:
+            rich_text:
+              type: array
+              items:
+                $ref: '#/components/schemas/RichTextContent'
+              description: Array of rich text objects for the heading
+            color:
+              type: string
+              enum: [default, gray, brown, orange, yellow, green, blue, purple, pink, red]
+              default: default
+            is_toggleable:
+              type: boolean
+              default: false
+          required:
+            - rich_text
+      required:
+        - object
+        - type
+        - heading_1
+    
+    Heading2Block:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [block]
+          default: block
+        type:
+          type: string
+          enum: [heading_2]
+          default: heading_2
+        heading_2:
+          type: object
+          properties:
+            rich_text:
+              type: array
+              items:
+                $ref: '#/components/schemas/RichTextContent'
+              description: Array of rich text objects for the heading
+            color:
+              type: string
+              enum: [default, gray, brown, orange, yellow, green, blue, purple, pink, red]
+              default: default
+            is_toggleable:
+              type: boolean
+              default: false
+          required:
+            - rich_text
+      required:
+        - object
+        - type
+        - heading_2
+    
+    Heading3Block:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [block]
+          default: block
+        type:
+          type: string
+          enum: [heading_3]
+          default: heading_3
+        heading_3:
+          type: object
+          properties:
+            rich_text:
+              type: array
+              items:
+                $ref: '#/components/schemas/RichTextContent'
+              description: Array of rich text objects for the heading
+            color:
+              type: string
+              enum: [default, gray, brown, orange, yellow, green, blue, purple, pink, red]
+              default: default
+            is_toggleable:
+              type: boolean
+              default: false
+          required:
+            - rich_text
+      required:
+        - object
+        - type
+        - heading_3
+    
+    ParagraphBlock:
+      type: object
+      properties:
+        object:
+          type: string
+          enum: [block]
+          default: block
+        type:
+          type: string
+          enum: [paragraph]
+          default: paragraph
+        paragraph:
+          type: object
+          properties:
+            rich_text:
+              type: array
+              items:
+                $ref: '#/components/schemas/RichTextContent'
+              description: Array of rich text objects for the paragraph
+            color:
+              type: string
+              enum: [default, gray, brown, orange, yellow, green, blue, purple, pink, red]
+              default: default
+          required:
+            - rich_text
+      required:
+        - object
+        - type
+        - paragraph
+    
+    CreatePageRequest:
+      type: object
+      properties:
+        parent:
+          type: object
+          properties:
+            data_source_id:
+              type: string
+              description: The ID of the data source (database) where the page will be created
+          required:
+            - data_source_id
+        properties:
+          type: object
+          properties:
+            Post-Mortem Summary:
+              type: object
+              properties:
+                title:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: object
+                        properties:
+                          content:
+                            type: string
+                            description: The title text for the page
+                        required:
+                          - content
+                    required:
+                      - text
+              required:
+                - title
+          required:
+            - Post-Mortem Summary
+          description: The properties object must include the title property for the database
+        children:
+          type: array
+          description: Array of block objects that will become the content of the page. Can include headings (heading_1, heading_2, heading_3) and paragraphs.
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/Heading1Block'
+              - $ref: '#/components/schemas/Heading2Block'
+              - $ref: '#/components/schemas/Heading3Block'
+              - $ref: '#/components/schemas/ParagraphBlock'
+      required:
+        - parent
+        - properties
+
+security:
+  - BearerAuth: []
+
+paths:
+  /pages:
+    post:
+      summary: Create a new page in Notion
+      description: Creates a new page in a Notion database with a title and content blocks (headings and paragraphs). The action can dynamically create multiple headings and paragraphs as needed.
+      operationId: createNotionPage
+      parameters:
+        - name: Notion-Version
+          in: header
+          required: true
+          schema:
+            type: string
+            default: "2025-09-03"
+          description: The Notion API version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePageRequest'
+            examples:
+              simpleExample:
+                summary: Simple page with heading and paragraph
+                value:
+                  parent:
+                    data_source_id: "28d86896-5b38-80de-8988-000b8b682e14"
+                  properties:
+                    Post-Mortem Summary:
+                      title:
+                        - text:
+                            content: "Test Page with heading and paragraph"
+                  children:
+                    - object: block
+                      type: heading_1
+                      heading_1:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "A test heading"
+                              link: null
+                        color: default
+                        is_toggleable: false
+                    - object: block
+                      type: paragraph
+                      paragraph:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "A test paragraph"
+                              link: null
+                        color: default
+              multipleHeadingsExample:
+                summary: Page with multiple heading levels and paragraphs
+                value:
+                  parent:
+                    data_source_id: "28d86896-5b38-80de-8988-000b8b682e14"
+                  properties:
+                    Post-Mortem Summary:
+                      title:
+                        - text:
+                            content: "Comprehensive Documentation"
+                  children:
+                    - object: block
+                      type: heading_1
+                      heading_1:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "Main Section"
+                              link: null
+                        color: default
+                        is_toggleable: false
+                    - object: block
+                      type: paragraph
+                      paragraph:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "Introduction paragraph here."
+                              link: null
+                        color: default
+                    - object: block
+                      type: heading_2
+                      heading_2:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "Subsection"
+                              link: null
+                        color: default
+                        is_toggleable: false
+                    - object: block
+                      type: paragraph
+                      paragraph:
+                        rich_text:
+                          - type: text
+                            text:
+                              content: "More detailed content."
+                              link: null
+                        color: default
+      responses:
+        '200':
+          description: Page created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: string
+                  id:
+                    type: string
+                  created_time:
+                    type: string
+                  last_edited_time:
+                    type: string
+                  url:
+                    type: string
+        '400':
+          description: Bad request - invalid parameters
+        '401':
+          description: Unauthorized - invalid or missing API key
+        '404':
+          description: Parent database not found
