@@ -8,8 +8,8 @@ This repository contains all configuration files needed to build a Custom GPT th
 
 ## Live Demo
 
-- **Custom GPT:** [LINK_TO_GPT]
-- **Notion Workspace:** [LINK_TO_NOTION_PAGE]
+- **Custom GPT:** [Incident Post-Mortem Pam](https://chatgpt.com/g/g-68f13fbab7dc8191a3034d506d02d2fd-incident-post-mortem-pam)
+- **Notion Workspace:** [Wealthfront Incident Post-Mortems](https://drt-cloud.notion.site/Wealthfront-Incident-Post-Mortems-28d868965b3880f2b8bdd103d2500a7f)
 - **Demo Video:** [LINK_TO_VIDEO]
 
 ## Repository Contents
@@ -18,7 +18,7 @@ This repository contains all configuration files needed to build a Custom GPT th
 wealthfront-incident-gpt-demo/
 ├── README.md
 ├── instructions.txt          # Complete GPT system prompt
-├── custom_action.json        # Notion API OpenAPI schema
+├── custom_action.yaml        # Notion API OpenAPI schema
 └── knowledge/                # Knowledge files that are uploaded to the CustomGPT
     ├── knowledge_file_1.md
     └── knowledge_file_2.md
@@ -29,7 +29,7 @@ wealthfront-incident-gpt-demo/
 **`instructions.txt`**
 - Holds the instructions used within the CustomGPT
 
-**`custom_action.json`**
+**`custom_action.yaml`**
 - OpenAPI 3.1.0 schema for Notion integration
 - API endpoints for search and page creation
 - Authentication configuration
@@ -50,32 +50,16 @@ wealthfront-incident-gpt-demo/
 3. Go to [ChatGPT GPT Editor](https://chat.openai.com/gpts/editor)
 4. Copy `instructions.txt` → Paste as Instructions
 5. Upload files from `knowledge/` → Add to Knowledge
-6. Import `custom_action.json` → Add as Action
+6. Import `custom_action.yaml` → Add as Action
 7. Configure Bearer auth with your Notion API token
 
-## Value Proposition
-
-**Why use a GPT for incident documentation?**
-- Natural language input (no rigid forms)
-- Intelligent follow-up questions
-- Searches institutional knowledge automatically
-- Consistent formatting and structure
-- 75% estimated time reduction vs manual documentation
-
 **Authentication:** Bearer token (Notion integration token)
-
-## Use Case: Wealthfront
-
-Digital wealth management platform requiring rapid, consistent incident documentation for:
-- Site Reliability Engineers (incident response)
-- Engineering Managers (trend analysis)
-- Compliance Team (audit requirements)
 
 ## Contact
 
 **Jeret Shuck**
 - Email: jeret.shuck@gmail.com
-- LinkedIn: [linkedin.com/in/jeret-shuck]
+- LinkedIn: [linkedin.com/in/jeret-shuck](https://www.linkedin.com/in/jeretshuck15963/)
 - Created: October 2025
 
 ---
