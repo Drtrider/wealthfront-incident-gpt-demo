@@ -4,13 +4,12 @@
 
 ## Overview
 
-This repository contains all configuration files needed to build a Custom GPT that automates incident post-mortem documentation. The GPT integrates with Notion's API to search past incidents and generate structured reports through natural conversation.
+This repository contains all configuration files needed to build a Custom GPT that automates incident post-mortem documentation. The GPT integrates with Notion's API to generate structured reports through natural conversation.
 
 ## Live Demo
 
 - **Custom GPT:** [Incident Post-Mortem Pam](https://chatgpt.com/g/g-68f13fbab7dc8191a3034d506d02d2fd-incident-post-mortem-pam)
 - **Notion Workspace:** [Wealthfront Incident Post-Mortems](https://drt-cloud.notion.site/Wealthfront-Incident-Post-Mortems-28d868965b3880f2b8bdd103d2500a7f)
-- **Demo Video:** [LINK_TO_VIDEO]
 
 ## Repository Contents
 
@@ -20,8 +19,8 @@ wealthfront-incident-gpt-demo/
 ├── instructions.txt          # Complete GPT system prompt
 ├── custom_action.yaml        # Notion API OpenAPI schema
 └── knowledge/                # Knowledge files that are uploaded to the CustomGPT
-    ├── knowledge_file_1.md
-    └── knowledge_file_2.md
+    ├── knowledge_file_example_1.md
+    └── knowledge_file_example_2.md
 ```
 
 ## What Each File Does
@@ -35,13 +34,12 @@ wealthfront-incident-gpt-demo/
 - Authentication configuration
 
 **`knowledge/`**
-- Files that are uploaded to the CustomGPT for additional knowldge
+- Files that are uploaded to the CustomGPT for additional knowledge
 
 ## How It Works
 
-1. **Search:** User asks about past incidents → GPT searches knowledge base
-2. **Interview:** User describes new incident → GPT asks clarifying questions
-3. **Generate:** GPT creates structured post-mortem page in Notion automatically
+1. **Interview:** User describes new incident → GPT asks clarifying questions
+2. **Generate:** GPT creates structured post-mortem page in Notion automatically
 
 ## Quick Start
 
