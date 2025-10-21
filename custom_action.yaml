@@ -1,20 +1,20 @@
-openapi: 3.1.0
-info:
+openapi: 3.1.0 # Denotes the version of OpenAPI to be used
+info: # Meta data about the API
   title: Notion Create Page API
   description: Create pages in Notion with dynamic content including headings and paragraphs
   version: 1.0.0
-servers:
+servers: # Denotes the base URL for the API
   - url: https://api.notion.com/v1
     description: Notion API Server
 
-components:
+components: # Holds reusable objects that are used elsewhere, and must be referenced
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       description: Notion Integration Token
   
-  schemas:
+  schemas: # Defines the input, and output datatypes for the API within the paths
     RichTextContent:
       type: object
       properties:
@@ -219,10 +219,10 @@ components:
         - parent
         - properties
 
-security:
+security: # Declares the security scheme to be used (and scopes if using OAuth), must match the securitySchemes defined above in components
   - BearerAuth: []
 
-paths:
+paths: # API endpoints that can be used, is appended to the #servers/url 
   /pages:
     post:
       summary: Create a new page in Notion
